@@ -1,14 +1,16 @@
 package helpers
 
+import "github.com/labstack/echo/v5"
+
 type Response struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
-// func SendResponseHTTP(c *gin.Context, code int, message string, data interface{}) {
-// 	resp := Response{
-// 		Message: message,
-// 		Data: data,
-// 	}
-// 	c.JSON(code, resp)
-// }
+func SendResponseHTTP(e *echo.Context, code int, message string, data interface{}) error {
+	resp := Response{
+		Message: message,
+		Data:    data,
+	}
+	return e.JSON(code, resp)
+}
