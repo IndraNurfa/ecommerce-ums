@@ -1,31 +1,33 @@
 package helpers
 
 import (
+	"ecommerce-ums/internal/models"
 	"fmt"
 	"log"
 
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
-func SetupMySQL() {
+func SetupPostgreSQL() {
 	var err error
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		GetEnv("DB_USER", "root"),
-		GetEnv("DB_PASSWORD", ""),
+
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		GetEnv("DB_HOST", "127.0.0.1"),
-		GetEnv("DB_PORT", "3306"),
+		GetEnv("DB_USER", "postgres"),
+		GetEnv("DB_PASSWORD", ""),
 		GetEnv("DB_NAME", ""),
+		GetEnv("DB_PORT", "5432"),
 	)
 
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database: ", err)
 	}
 	logrus.Info("successfully connect to database...")
 
-	// DB.AutoMigrate()
+	DB.AutoMigrate(&models.User{}, &models.UserSession{})
 }
