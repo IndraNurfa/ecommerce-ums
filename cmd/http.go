@@ -7,19 +7,31 @@ import (
 	"ecommerce-ums/internal/repository"
 	"ecommerce-ums/internal/services"
 
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
 
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
+}
+
 func ServeHTTP() {
 	d := dependencyInject()
 	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
 
 	e.Use(middleware.RequestLogger())
 	e.GET("/health", d.HealthAPI.Health)
 
-	userV1 := e.Group("/user/v1")
-	userV1.POST("register", d.UserAPI.RegisterUser)
+	v1 := e.Group("/api/v1")
+
+	// User routes
+	v1.POST("/users/register", d.UserAPI.RegisterUser)
 
 	if err := e.Start(":" + helpers.GetEnv("PORT", "9000")); err != nil {
 		helpers.Logger.Error("failed to start server: ", err)

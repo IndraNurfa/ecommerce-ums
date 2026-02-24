@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID          int       `json:"id"`
+	ID          int       `json:"-"`
 	Username    string    `json:"username" gorm:"uniqueIndex;column:username;type:varchar(20);not null" validate:"required"`
 	Email       string    `json:"email" gorm:"uniqueIndex;column:email;type:varchar(100);not null" validate:"required,email"`
 	PhoneNumber string    `json:"phone_number" gorm:"uniqueIndex;column:phone_number;type:varchar(15);not null" validate:"required"`
