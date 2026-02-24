@@ -15,13 +15,11 @@ type UserAPI struct {
 }
 
 func (api *UserAPI) RegisterUser(e *echo.Context) error {
-	var (
-		req *models.User
-		log = helpers.Logger
-	)
+	req := &models.User{}
+	log := helpers.Logger
 
 	if err := e.Bind(req); err != nil {
-		log.Error("failed to parese request: ", err)
+		log.Error("failed to parse request: ", err)
 		return helpers.SendResponseHTTP(e, http.StatusBadRequest, constants.ErrFailedBadRequest, nil)
 	}
 
