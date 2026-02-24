@@ -18,17 +18,40 @@ func (api *UserAPI) RegisterUser(e *echo.Context) error {
 	req := &models.User{}
 	log := helpers.Logger
 
-	if err := e.Bind(req); err != nil {
+	if err := e.Bind(&req); err != nil {
 		log.Error("failed to parse request: ", err)
 		return helpers.SendResponseHTTP(e, http.StatusBadRequest, constants.ErrFailedBadRequest, nil)
 	}
 
-	if err := e.Validate(req); err != nil {
+	if err := req.Validate(); err != nil {
 		log.Error("failed to validate request: ", err)
 		return helpers.SendResponseHTTP(e, http.StatusBadRequest, constants.ErrFailedBadRequest, nil)
 	}
 
 	resp, err := api.UserService.RegisterUser(e.Request().Context(), req)
+	if err != nil {
+		log.Error("failed to register : ", err)
+		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrFailedBadRequest, nil)
+	}
+
+	return helpers.SendResponseHTTP(e, http.StatusOK, constants.SuccessMessage, resp)
+}
+
+func (api *UserAPI) RegisterAdmin(e *echo.Context) error {
+	req := &models.User{}
+	log := helpers.Logger
+
+	if err := e.Bind(&req); err != nil {
+		log.Error("failed to parse request: ", err)
+		return helpers.SendResponseHTTP(e, http.StatusBadRequest, constants.ErrFailedBadRequest, nil)
+	}
+
+	if err := req.Validate(); err != nil {
+		log.Error("failed to validate request: ", err)
+		return helpers.SendResponseHTTP(e, http.StatusBadRequest, constants.ErrFailedBadRequest, nil)
+	}
+
+	resp, err := api.UserService.RegisterAdmin(e.Request().Context(), req)
 	if err != nil {
 		log.Error("failed to register : ", err)
 		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrFailedBadRequest, nil)
