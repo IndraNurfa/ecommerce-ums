@@ -101,3 +101,18 @@ func (s *UserService) Login(ctx context.Context, req *models.LoginRequest, role 
 
 	return response, nil
 }
+
+func (s *UserService) GetProfile(ctx context.Context, username string) (models.User, error) {
+	var (
+		resp models.User
+	)
+	
+	resp, err := s.UserRepo.GetUserbyUsername(ctx, username, "")
+	if err != nil {
+		return resp, errors.Wrap(err, "failed to compare password")
+	}
+
+	resp.Password = ""
+	resp.Role = ""
+	return resp, nil
+}
