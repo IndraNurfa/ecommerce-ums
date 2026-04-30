@@ -28,6 +28,8 @@ func ServeHTTP() {
 
 	v1.GET("/profile", d.UserAPI.GetProfile, d.MiddlewareValidateAuth)
 
+	v1.DELETE("/logout", d.UserAPI.Logout, d.MiddlewareValidateAuth)
+
 	v1.PUT("/refresh-token", d.RefreshTokenAPI.RefreshToken, d.MiddlewareRefreshToken)
 
 	if err := e.Start(":" + helpers.GetEnv("PORT", "9000")); err != nil {
