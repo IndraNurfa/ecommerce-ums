@@ -74,3 +74,7 @@ func (r *UserRepository) GetUserSessionByRefreshToken(ctx context.Context, refre
 func (r *UserRepository) UpdateTokenByRefreshToken(ctx context.Context, token, refresh_token string, tokenExpired, updatedAt time.Time) error {
 	return r.DB.Exec("UPDATE user_sessions SET token = ?, token_expired = ?, updated_at = ? WHERE refresh_token = ?", token, tokenExpired, updatedAt, refresh_token).Error
 }
+
+func (r *UserRepository) DeleteUserSession(ctx context.Context, token string) error {
+	return r.DB.Exec("DELETE FROM user_sessions WHERE token = ?", token).Error
+}

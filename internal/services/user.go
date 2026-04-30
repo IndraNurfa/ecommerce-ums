@@ -116,3 +116,7 @@ func (s *UserService) GetProfile(ctx context.Context, username string) (models.U
 	resp.Role = ""
 	return resp, nil
 }
+
+func (s *UserService) Logout(ctx context.Context, token string) error {
+	return s.UserRepo.DeleteUserSession(ctx, token)
+}

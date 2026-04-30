@@ -14,6 +14,7 @@ type IUserAPI interface {
 	LoginUser(e *echo.Context) error
 	LoginAdmin(e *echo.Context) error
 	GetProfile(e *echo.Context) error
+	Logout(e *echo.Context) error
 }
 
 type IUserService interface {
@@ -21,6 +22,7 @@ type IUserService interface {
 	RegisterAdmin(ctx context.Context, req *models.User) (*models.User, error)
 	Login(ctx context.Context, req *models.LoginRequest, role string) (models.LoginResponse, error)
 	GetProfile(ctx context.Context, username string) (models.User, error)
+	Logout(ctx context.Context, token string) error
 }
 
 type IUserRepository interface {
@@ -30,4 +32,5 @@ type IUserRepository interface {
 	GetUserSessionByToken(ctx context.Context, token string) (models.UserSession, error)
 	GetUserSessionByRefreshToken(ctx context.Context, refreshToken string) (models.UserSession, error)
 	UpdateTokenByRefreshToken(ctx context.Context, token, refresh_token string, tokenExpired, updatedAt time.Time) error
+	DeleteUserSession(ctx context.Context, token string) error
 }

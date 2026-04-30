@@ -124,3 +124,17 @@ func (api *UserAPI) GetProfile(e *echo.Context) error {
 
 	return helpers.SendResponseHTTP(e, http.StatusOK, constants.SuccessMessage, resp)
 }
+
+func (api *UserAPI) Logout(e *echo.Context) error {
+	log := helpers.Logger
+
+	token := e.Request().Header.Get("Authorization")
+
+	err := api.UserService.Logout(e.Request().Context(), token)
+	if err != nil {
+		log.Error("failed to get profile : ", err)
+		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrFailedBadRequest, nil)
+	}
+
+	return helpers.SendResponseHTTP(e, http.StatusOK, constants.SuccessMessage, nil)
+}
