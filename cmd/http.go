@@ -25,7 +25,10 @@ func ServeHTTP() {
 	v1.POST("/register/admin", d.UserAPI.RegisterAdmin)
 	v1.POST("/login", d.UserAPI.LoginUser)
 	v1.POST("/login/admin", d.UserAPI.LoginAdmin)
+
 	v1.GET("/profile", d.UserAPI.GetProfile, d.MiddlewareValidateAuth)
+
+	v1.PUT("/refresh-token", d.RefreshTokenAPI.RefreshToken, d.MiddlewareRefreshToken)
 
 	if err := e.Start(":" + helpers.GetEnv("PORT", "9000")); err != nil {
 		helpers.Logger.Error("failed to start server: ", err)
@@ -33,9 +36,12 @@ func ServeHTTP() {
 }
 
 type Dependency struct {
-	HealthAPI      *api.HealthAPI
+	HealthAPI *api.HealthAPI
+
 	UserRepository interfaces.IUserRepository
 	UserAPI        interfaces.IUserAPI
+
+	RefreshTokenAPI interfaces.IRefreshTokenHandler
 }
 
 func dependencyInject() Dependency {
@@ -59,9 +65,18 @@ func dependencyInject() Dependency {
 		HealthService: healthSvc,
 	}
 
+	refreshTokensvc := &services.RefreshTokenService{
+		UserRepo: userRepo,
+	}
+
+	refrehTokenAPI := &api.RefreshTokenHandler{
+		RefreshTokenService: refreshTokensvc,
+	}
+
 	return Dependency{
-		HealthAPI:      healthAPI,
-		UserRepository: userRepo,
-		UserAPI:        userAPI,
+		HealthAPI:       healthAPI,
+		UserRepository:  userRepo,
+		UserAPI:         userAPI,
+		RefreshTokenAPI: refrehTokenAPI,
 	}
 }

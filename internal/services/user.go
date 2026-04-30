@@ -106,7 +106,7 @@ func (s *UserService) GetProfile(ctx context.Context, username string) (models.U
 	var (
 		resp models.User
 	)
-	
+
 	resp, err := s.UserRepo.GetUserbyUsername(ctx, username, "")
 	if err != nil {
 		return resp, errors.Wrap(err, "failed to compare password")

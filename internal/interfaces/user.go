@@ -3,6 +3,7 @@ package interfaces
 import (
 	"context"
 	"ecommerce-ums/internal/models"
+	"time"
 
 	"github.com/labstack/echo/v5"
 )
@@ -12,7 +13,7 @@ type IUserAPI interface {
 	RegisterAdmin(e *echo.Context) error
 	LoginUser(e *echo.Context) error
 	LoginAdmin(e *echo.Context) error
-	GetProfile(e *echo.Context) error 
+	GetProfile(e *echo.Context) error
 }
 
 type IUserService interface {
@@ -27,4 +28,6 @@ type IUserRepository interface {
 	GetUserbyUsername(ctx context.Context, username, role string) (models.User, error)
 	InsertNewUserSession(ctx context.Context, session *models.UserSession) error
 	GetUserSessionByToken(ctx context.Context, token string) (models.UserSession, error)
+	GetUserSessionByRefreshToken(ctx context.Context, refreshToken string) (models.UserSession, error)
+	UpdateTokenByRefreshToken(ctx context.Context, token, refresh_token string, tokenExpired, updatedAt time.Time) error
 }
