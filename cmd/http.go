@@ -23,6 +23,8 @@ func ServeHTTP() {
 	// User routes
 	v1.POST("/users/register", d.UserAPI.RegisterUser)
 	v1.POST("/users/register/admin", d.UserAPI.RegisterAdmin)
+	v1.POST("/users/login", d.UserAPI.LoginUser)
+	v1.POST("/users/login/admin", d.UserAPI.LoginAdmin)
 
 	if err := e.Start(":" + helpers.GetEnv("PORT", "9000")); err != nil {
 		helpers.Logger.Error("failed to start server: ", err)
