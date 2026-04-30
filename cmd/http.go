@@ -18,13 +18,14 @@ func ServeHTTP() {
 	e.Use(middleware.RequestLogger())
 	e.GET("/health", d.HealthAPI.Health)
 
-	v1 := e.Group("/api/v1")
+	v1 := e.Group("/api/v1/users")
 
 	// User routes
-	v1.POST("/users/register", d.UserAPI.RegisterUser)
-	v1.POST("/users/register/admin", d.UserAPI.RegisterAdmin)
-	v1.POST("/users/login", d.UserAPI.LoginUser)
-	v1.POST("/users/login/admin", d.UserAPI.LoginAdmin)
+	v1.POST("/register", d.UserAPI.RegisterUser)
+	v1.POST("/register/admin", d.UserAPI.RegisterAdmin)
+	v1.POST("/login", d.UserAPI.LoginUser)
+	v1.POST("/login/admin", d.UserAPI.LoginAdmin)
+	v1.GET("/profile", d.UserAPI.GetProfile, d.MiddlewareValidateAuth)
 
 	if err := e.Start(":" + helpers.GetEnv("PORT", "9000")); err != nil {
 		helpers.Logger.Error("failed to start server: ", err)
