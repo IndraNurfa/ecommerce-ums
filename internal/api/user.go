@@ -5,7 +5,6 @@ import (
 	"ecommerce-ums/helpers"
 	"ecommerce-ums/internal/interfaces"
 	"ecommerce-ums/internal/models"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
@@ -112,7 +111,6 @@ func (api *UserAPI) GetProfile(e *echo.Context) error {
 
 	token := e.Get("token")
 	tokenClaim, ok := token.(helpers.ClaimToken)
-	fmt.Println("ok", ok)
 	if !ok {
 		log.Error("failed to fetch token")
 		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrServerError, nil)

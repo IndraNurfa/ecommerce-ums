@@ -15,21 +15,18 @@ func (d *Dependency) MiddlewareValidateAuth(next echo.HandlerFunc) echo.HandlerF
 		if auth == "" {
 			log.Println("authorization empty")
 			return helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
-
 		}
 
 		_, err := d.UserRepository.GetUserSessionByToken(c.Request().Context(), auth)
 		if err != nil {
 			log.Println("failed to get user session on DB: ", err)
 			return helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
-
 		}
 
 		claim, err := helpers.ValidateToken(c.Request().Context(), auth)
 		if err != nil {
 			log.Println(err)
 			return helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
-
 		}
 
 		if time.Now().Unix() > claim.ExpiresAt.Unix() {
@@ -44,38 +41,32 @@ func (d *Dependency) MiddlewareValidateAuth(next echo.HandlerFunc) echo.HandlerF
 
 }
 
-// func (d *Dependency) MiddlewareRefreshToken(ctx *gin.Context) {
-// 	auth := ctx.Request.Header.Get("Authorization")
-// 	if auth == "" {
-// 		helpers.SendResponseHTTP(ctx, http.StatusUnauthorized, "unauthorized empty", nil)
-// 		ctx.Abort()
-// 		return
-// 	}
+func (d *Dependency) MiddlewareRefreshToken(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		auth := c.Request().Header.Get("Authorization")
+		if auth == "" {
+			helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized empty", nil)
+		}
 
-// 	_, err := d.UserRepository.GetUserSessionByRefreshToken(ctx.Request.Context(), auth)
-// 	if err != nil {
-// 		log.Println("failed to get user session on DB: ", err)
-// 		helpers.SendResponseHTTP(ctx, http.StatusUnauthorized, "unauthorized", nil)
-// 		ctx.Abort()
-// 		return
-// 	}
+		_, err := d.UserRepository.GetUserSessionByRefreshToken(c.Request().Context(), auth)
+		if err != nil {
+			log.Println("failed to get user session on DB: ", err)
+			helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
+		}
 
-// 	claim, err := helpers.ValidateToken(ctx, auth)
-// 	if err != nil {
-// 		log.Println(err)
-// 		helpers.SendResponseHTTP(ctx, http.StatusUnauthorized, "unauthorized", nil)
-// 		ctx.Abort()
-// 		return
-// 	}
+		claim, err := helpers.ValidateToken(c.Request().Context(), auth)
+		if err != nil {
+			log.Println(err)
+			helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
+		}
 
-// 	if time.Now().Unix() > claim.ExpiresAt.Unix() {
-// 		log.Println(err)
-// 		helpers.SendResponseHTTP(ctx, http.StatusUnauthorized, "unauthorized", nil)
-// 		ctx.Abort()
-// 		return
-// 	}
+		if time.Now().Unix() > claim.ExpiresAt.Unix() {
+			log.Println(err)
+			helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
+		}
 
-// 	ctx.Set("token", claim)
+		c.Set("token", *claim)
 
-// 	ctx.Next()
-// }
+		return next(c)
+	}
+}
