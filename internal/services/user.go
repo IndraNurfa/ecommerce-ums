@@ -7,6 +7,7 @@ import (
 	"ecommerce-ums/internal/models"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -60,6 +61,7 @@ func (s *UserService) Login(ctx context.Context, req *models.LoginRequest, role 
 		response models.LoginResponse
 		now      = time.Now()
 	)
+
 	userDetail, err := s.UserRepo.GetUserbyUsername(ctx, req.Username, role)
 	if err != nil {
 		return response, errors.Wrap(err, "failed to get user by username")
@@ -69,20 +71,32 @@ func (s *UserService) Login(ctx context.Context, req *models.LoginRequest, role 
 		return response, errors.Wrap(err, "failed to compare password")
 	}
 
-	token, err := helpers.GenerateToken(ctx, userDetail.ID, userDetail.Username, userDetail.FullName, userDetail.Email, "token", now)
+	uuid, err := uuid.NewV7()
+	if err != nil {
+		return response, errors.Wrap(err, "failed to create token id")
+	}
+
+	parseUuid := uuid.String()
+
+	token, err := helpers.GenerateToken(ctx, parseUuid, userDetail.ID, userDetail.Username, userDetail.FullName, userDetail.Email, "token", now)
 	if err != nil {
 		return response, errors.Wrap(err, "failed to generate token")
 	}
 
-	refreshToken, err := helpers.GenerateToken(ctx, userDetail.ID, userDetail.Username, userDetail.FullName, userDetail.Email, "refresh_token", now)
+	hashToken := helpers.GenerateHash(token)
+
+	refreshToken, err := helpers.GenerateToken(ctx, parseUuid, userDetail.ID, userDetail.Username, userDetail.FullName, userDetail.Email, "refresh_token", now)
 	if err != nil {
 		return response, errors.Wrap(err, "failed to generate refresh token")
 	}
 
+	hashRefreshToken := helpers.GenerateHash(refreshToken)
+
 	userSession := &models.UserSession{
+		ID:                  uuid,
 		UserID:              int(userDetail.ID),
-		Token:               token,
-		RefreshToken:        refreshToken,
+		Token:               hashToken,
+		RefreshToken:        hashRefreshToken,
 		TokenExpired:        now.Add(helpers.MapTypeToken["token"]),
 		RefreshTokenExpired: now.Add(helpers.MapTypeToken["refresh_token"]),
 	}
@@ -113,7 +127,6 @@ func (s *UserService) GetProfile(ctx context.Context, username string) (models.U
 	}
 
 	resp.Password = ""
-	resp.Role = ""
 	return resp, nil
 }
 

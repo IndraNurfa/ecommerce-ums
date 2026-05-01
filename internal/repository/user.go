@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -16,6 +17,7 @@ type UserRepository struct {
 func (r *UserRepository) InsertNewUser(ctx context.Context, user *models.User) error {
 	return r.DB.Create(user).Error
 }
+
 func (r *UserRepository) GetUserbyUsername(ctx context.Context, username, role string) (models.User, error) {
 	var (
 		user models.User
@@ -41,38 +43,22 @@ func (r *UserRepository) InsertNewUserSession(ctx context.Context, session *mode
 	return r.DB.Create(session).Error
 }
 
-func (r *UserRepository) GetUserSessionByToken(ctx context.Context, token string) (models.UserSession, error) {
-	var (
-		session models.UserSession
-		err     error
-	)
-	err = r.DB.Where("token = ?", token).First(&session).Error
+func (r *UserRepository) GetUserSessionById(ctx context.Context, id uuid.UUID) (models.UserSession, error) {
+	var session models.UserSession
+
+	err := r.DB.First(&session, id).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return session, errors.New("session not found")
+		}
 		return session, err
 	}
-	if session.ID == 0 {
-		return session, errors.New("session not found")
-	}
+
 	return session, nil
 }
 
-func (r *UserRepository) GetUserSessionByRefreshToken(ctx context.Context, refreshToken string) (models.UserSession, error) {
-	var (
-		session models.UserSession
-		err     error
-	)
-	err = r.DB.Where("refresh_token = ?", refreshToken).First(&session).Error
-	if err != nil {
-		return session, err
-	}
-	if session.ID == 0 {
-		return session, errors.New("session not found")
-	}
-	return session, nil
-}
-
-func (r *UserRepository) UpdateTokenByRefreshToken(ctx context.Context, token, refresh_token string, tokenExpired, updatedAt time.Time) error {
-	return r.DB.Exec("UPDATE user_sessions SET token = ?, token_expired = ?, updated_at = ? WHERE refresh_token = ?", token, tokenExpired, updatedAt, refresh_token).Error
+func (r *UserRepository) UpdateTokenById(ctx context.Context, token, id string, tokenExpired, updatedAt time.Time) error {
+	return r.DB.Exec("UPDATE user_sessions SET token = ?, token_expired = ?, updated_at = ? WHERE id = ?", token, tokenExpired, updatedAt, id).Error
 }
 
 func (r *UserRepository) DeleteUserSession(ctx context.Context, token string) error {

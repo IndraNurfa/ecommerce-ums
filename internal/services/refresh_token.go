@@ -14,19 +14,21 @@ type RefreshTokenService struct {
 	UserRepo interfaces.IUserRepository
 }
 
-func (s *RefreshTokenService) RefreshToken(ctx context.Context, refreshToken string, tokenClaim helpers.ClaimToken) (models.RefreshTokenResponse, error) {
+func (s *RefreshTokenService) RefreshToken(ctx context.Context, tokenClaim helpers.ClaimToken) (models.RefreshTokenResponse, error) {
 	var (
 		now = time.Now()
 	)
 
 	resp := models.RefreshTokenResponse{}
 
-	token, err := helpers.GenerateToken(ctx, tokenClaim.UserID, tokenClaim.Username, tokenClaim.Fullname, tokenClaim.Email, "token", time.Now())
+	token, err := helpers.GenerateToken(ctx, tokenClaim.ID, tokenClaim.UserID, tokenClaim.Username, tokenClaim.Fullname, tokenClaim.Email, "token", time.Now())
 	if err != nil {
 		return resp, errors.Wrap(err, "failed to generate new token")
 	}
 
-	err = s.UserRepo.UpdateTokenByRefreshToken(ctx, token, refreshToken, now.Add(helpers.MapTypeToken["token"]), now)
+	hashNewToken := helpers.GenerateHash(token)
+
+	err = s.UserRepo.UpdateTokenById(ctx, hashNewToken, tokenClaim.ID, now.Add(helpers.MapTypeToken["token"]), now)
 	if err != nil {
 		return resp, errors.Wrap(err, "failed to update new refresh token")
 	}

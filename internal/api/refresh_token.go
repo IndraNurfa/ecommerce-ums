@@ -18,7 +18,6 @@ func (api *RefreshTokenHandler) RefreshToken(e *echo.Context) error {
 		log = helpers.Logger
 	)
 
-	refreshToken := e.Request().Header.Get("Authorization")
 	token := e.Get("token")
 	tokenClaim, ok := token.(helpers.ClaimToken)
 	if !ok {
@@ -27,9 +26,9 @@ func (api *RefreshTokenHandler) RefreshToken(e *echo.Context) error {
 
 	}
 
-	resp, err := api.RefreshTokenService.RefreshToken(e.Request().Context(), refreshToken, tokenClaim)
+	resp, err := api.RefreshTokenService.RefreshToken(e.Request().Context(), tokenClaim)
 	if err != nil {
-		log.Error("failed on logout service: ", err)
+		log.Error("failed on refresh token service: ", err)
 		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrServerError, nil)
 
 	}

@@ -21,7 +21,7 @@ var MapTypeToken = map[string]time.Duration{
 	"refresh_token": time.Hour * 72,
 }
 
-func GenerateToken(ctx context.Context, userID int, username string, fullname string, email string, tokenType string, now time.Time) (string, error) {
+func GenerateToken(ctx context.Context, id string, userID int, username string, fullname string, email string, tokenType string, now time.Time) (string, error) {
 
 	claimToken := ClaimToken{
 		UserID:   userID,
@@ -32,6 +32,7 @@ func GenerateToken(ctx context.Context, userID int, username string, fullname st
 			Issuer:    GetEnv("APP_NAME", ""),
 			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(now.Add(MapTypeToken[tokenType])),
+			ID:        id,
 		},
 	}
 

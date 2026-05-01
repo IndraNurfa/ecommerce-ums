@@ -132,7 +132,7 @@ func (api *UserAPI) Logout(e *echo.Context) error {
 
 	err := api.UserService.Logout(e.Request().Context(), token)
 	if err != nil {
-		log.Error("failed to get profile : ", err)
+		log.Error("failed to logout : ", err)
 		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrFailedBadRequest, nil)
 	}
 

@@ -5,6 +5,7 @@ import (
 	"ecommerce-ums/internal/models"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v5"
 )
 
@@ -29,8 +30,7 @@ type IUserRepository interface {
 	InsertNewUser(ctx context.Context, user *models.User) error
 	GetUserbyUsername(ctx context.Context, username, role string) (models.User, error)
 	InsertNewUserSession(ctx context.Context, session *models.UserSession) error
-	GetUserSessionByToken(ctx context.Context, token string) (models.UserSession, error)
-	GetUserSessionByRefreshToken(ctx context.Context, refreshToken string) (models.UserSession, error)
-	UpdateTokenByRefreshToken(ctx context.Context, token, refresh_token string, tokenExpired, updatedAt time.Time) error
+	GetUserSessionById(ctx context.Context, id uuid.UUID) (models.UserSession, error)
+	UpdateTokenById(ctx context.Context, token, id string, tokenExpired, updatedAt time.Time) error
 	DeleteUserSession(ctx context.Context, token string) error
 }
