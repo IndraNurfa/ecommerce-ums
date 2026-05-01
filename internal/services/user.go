@@ -83,16 +83,20 @@ func (s *UserService) Login(ctx context.Context, req *models.LoginRequest, role 
 		return response, errors.Wrap(err, "failed to generate token")
 	}
 
+	hashToken := helpers.GenerateHash(token)
+
 	refreshToken, err := helpers.GenerateToken(ctx, parseUuid, userDetail.ID, userDetail.Username, userDetail.FullName, userDetail.Email, "refresh_token", now)
 	if err != nil {
 		return response, errors.Wrap(err, "failed to generate refresh token")
 	}
 
+	hashRefreshToken := helpers.GenerateHash(refreshToken)
+
 	userSession := &models.UserSession{
 		ID:                  uuid,
 		UserID:              int(userDetail.ID),
-		Token:               token,
-		RefreshToken:        refreshToken,
+		Token:               hashToken,
+		RefreshToken:        hashRefreshToken,
 		TokenExpired:        now.Add(helpers.MapTypeToken["token"]),
 		RefreshTokenExpired: now.Add(helpers.MapTypeToken["refresh_token"]),
 	}

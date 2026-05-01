@@ -26,7 +26,10 @@ func (s *RefreshTokenService) RefreshToken(ctx context.Context, refreshToken str
 		return resp, errors.Wrap(err, "failed to generate new token")
 	}
 
-	err = s.UserRepo.UpdateTokenByRefreshToken(ctx, token, refreshToken, now.Add(helpers.MapTypeToken["token"]), now)
+	hashRefreshToken := helpers.GenerateHash(refreshToken)
+	hashNewToken := helpers.GenerateHash(token)
+
+	err = s.UserRepo.UpdateTokenByRefreshToken(ctx, hashNewToken, hashRefreshToken, now.Add(helpers.MapTypeToken["token"]), now)
 	if err != nil {
 		return resp, errors.Wrap(err, "failed to update new refresh token")
 	}

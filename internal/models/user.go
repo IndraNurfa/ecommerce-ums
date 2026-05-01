@@ -42,8 +42,8 @@ type UserSession struct {
 	CreatedAt           time.Time `gorm:"index"`
 	UpdatedAt           time.Time
 	UserID              int       `gorm:"not null;index"`
-	Token               string    `gorm:"type:text;not null;uniqueIndex"`
-	RefreshToken        string    `gorm:"type:text;not null;uniqueIndex"`
+	Token               string    `gorm:"type:char(64);not null;uniqueIndex"`
+	RefreshToken        string    `gorm:"type:char(64);not null;uniqueIndex"`
 	TokenExpired        time.Time `gorm:"index"`
 	RefreshTokenExpired time.Time `gorm:"index"`
 }

@@ -41,7 +41,7 @@ func (d *Dependency) MiddlewareValidateAuth(next echo.HandlerFunc) echo.HandlerF
 			return helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
 		}
 
-		if tokenData.Token != auth {
+		if helpers.GenerateHash(auth) != tokenData.Token {
 			log.Println("token invalid: ", id)
 			return helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
 		}
@@ -83,7 +83,7 @@ func (d *Dependency) MiddlewareRefreshToken(next echo.HandlerFunc) echo.HandlerF
 			return helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
 		}
 
-		if tokenData.RefreshToken != auth {
+		if helpers.GenerateHash(auth) != tokenData.RefreshToken {
 			log.Println("token invalid: ", id)
 			return helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
 		}
