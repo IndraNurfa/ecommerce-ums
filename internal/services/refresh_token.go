@@ -21,7 +21,7 @@ func (s *RefreshTokenService) RefreshToken(ctx context.Context, tokenClaim helpe
 
 	resp := models.RefreshTokenResponse{}
 
-	token, err := helpers.GenerateToken(ctx, tokenClaim.ID, tokenClaim.UserID, tokenClaim.Username, tokenClaim.Fullname, tokenClaim.Email, "token", time.Now())
+	token, err := helpers.GenerateToken(ctx, tokenClaim.ID, tokenClaim.Subject, "token", time.Now())
 	if err != nil {
 		return resp, errors.Wrap(err, "failed to generate new token")
 	}
