@@ -78,14 +78,14 @@ func (s *UserService) Login(ctx context.Context, req *models.LoginRequest, role 
 
 	parseUuid := uuid.String()
 
-	token, err := helpers.GenerateToken(ctx, parseUuid, userDetail.ID, userDetail.Username, userDetail.FullName, userDetail.Email, "token", now)
+	token, err := helpers.GenerateToken(ctx, parseUuid, userDetail.Username, "token", now)
 	if err != nil {
 		return response, errors.Wrap(err, "failed to generate token")
 	}
 
 	hashToken := helpers.GenerateHash(token)
 
-	refreshToken, err := helpers.GenerateToken(ctx, parseUuid, userDetail.ID, userDetail.Username, userDetail.FullName, userDetail.Email, "refresh_token", now)
+	refreshToken, err := helpers.GenerateToken(ctx, parseUuid, userDetail.Username, "refresh_token", now)
 	if err != nil {
 		return response, errors.Wrap(err, "failed to generate refresh token")
 	}

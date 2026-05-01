@@ -116,7 +116,7 @@ func (api *UserAPI) GetProfile(e *echo.Context) error {
 		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrServerError, nil)
 	}
 
-	resp, err := api.UserService.GetProfile(e.Request().Context(), tokenClaim.Username)
+	resp, err := api.UserService.GetProfile(e.Request().Context(), tokenClaim.Subject)
 	if err != nil {
 		log.Error("failed to get profile : ", err)
 		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrFailedBadRequest, nil)
