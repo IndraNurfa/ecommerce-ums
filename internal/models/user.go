@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type User struct {
@@ -37,14 +38,14 @@ func (l User) Validate() error {
 }
 
 type UserSession struct {
-	ID                  int       `gorm:"primarykey"`
-	CreatedAt           time.Time `json:"-"`
-	UpdatedAt           time.Time `json:"-"`
-	UserID              int       `json:"user_id" gorm:"type:int" validate:"required"`
-	Token               string    `json:"token" gorm:"type:text;" validate:"required"`
-	RefreshToken        string    `json:"refresh_token" gorm:"type:text;" validate:"required"`
-	TokenExpired        time.Time `json:"-" validate:"required"`
-	RefreshTokenExpired time.Time `json:"-" validate:"required"`
+	ID                  uuid.UUID `gorm:"type:uuid;primaryKey"`
+	CreatedAt           time.Time `gorm:"index"`
+	UpdatedAt           time.Time
+	UserID              int       `gorm:"not null;index"`
+	Token               string    `gorm:"type:text;not null;uniqueIndex"`
+	RefreshToken        string    `gorm:"type:text;not null;uniqueIndex"`
+	TokenExpired        time.Time `gorm:"index"`
+	RefreshTokenExpired time.Time `gorm:"index"`
 }
 
 func (*UserSession) TableName() string {

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -50,9 +51,9 @@ func (r *UserRepository) GetUserSessionByToken(ctx context.Context, token string
 	if err != nil {
 		return session, err
 	}
-	if session.ID == 0 {
-		return session, errors.New("session not found")
-	}
+	// if session.ID == 0 {
+	// 	return session, errors.New("session not found")
+	// }
 	return session, nil
 }
 
@@ -65,9 +66,23 @@ func (r *UserRepository) GetUserSessionByRefreshToken(ctx context.Context, refre
 	if err != nil {
 		return session, err
 	}
-	if session.ID == 0 {
-		return session, errors.New("session not found")
+	// if session.ID == 0 {
+	// 	return session, errors.New("session not found")
+	// }
+	return session, nil
+}
+
+func (r *UserRepository) GetUserSessionById(ctx context.Context, id uuid.UUIDs) (models.UserSession, error) {
+	var session models.UserSession
+
+	err := r.DB.First(&session, id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return session, errors.New("session not found")
+		}
+		return session, err
 	}
+
 	return session, nil
 }
 
