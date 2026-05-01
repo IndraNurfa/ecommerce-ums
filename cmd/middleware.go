@@ -67,7 +67,7 @@ func (d *Dependency) MiddlewareRefreshToken(next echo.HandlerFunc) echo.HandlerF
 		}
 
 		if time.Now().Unix() > claim.ExpiresAt.Unix() {
-			log.Println("jwt token is expired: ", claim.ExpiresAt)
+			log.Println("jwt refresh token is expired: ", claim.ExpiresAt)
 			return helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
 		}
 
@@ -84,7 +84,7 @@ func (d *Dependency) MiddlewareRefreshToken(next echo.HandlerFunc) echo.HandlerF
 		}
 
 		if helpers.GenerateHash(auth) != tokenData.RefreshToken {
-			log.Println("token invalid: ", id)
+			log.Println("refresh token invalid: ", id)
 			return helpers.SendResponseHTTP(c, http.StatusUnauthorized, "unauthorized", nil)
 		}
 

@@ -57,8 +57,8 @@ func (r *UserRepository) GetUserSessionById(ctx context.Context, id uuid.UUID) (
 	return session, nil
 }
 
-func (r *UserRepository) UpdateTokenByRefreshToken(ctx context.Context, token, refresh_token string, tokenExpired, updatedAt time.Time) error {
-	return r.DB.Exec("UPDATE user_sessions SET token = ?, token_expired = ?, updated_at = ? WHERE refresh_token = ?", token, tokenExpired, updatedAt, refresh_token).Error
+func (r *UserRepository) UpdateTokenById(ctx context.Context, token, id string, tokenExpired, updatedAt time.Time) error {
+	return r.DB.Exec("UPDATE user_sessions SET token = ?, token_expired = ?, updated_at = ? WHERE id = ?", token, tokenExpired, updatedAt, id).Error
 }
 
 func (r *UserRepository) DeleteUserSession(ctx context.Context, token string) error {

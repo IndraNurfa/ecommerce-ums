@@ -13,5 +13,5 @@ type IRefreshTokenHandler interface {
 }
 
 type IRefreshTokenService interface {
-	RefreshToken(ctx context.Context, refreshToken string, tokenClaim helpers.ClaimToken) (models.RefreshTokenResponse, error)
+	RefreshToken(ctx context.Context, tokenClaim helpers.ClaimToken) (models.RefreshTokenResponse, error)
 }

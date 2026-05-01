@@ -31,6 +31,6 @@ type IUserRepository interface {
 	GetUserbyUsername(ctx context.Context, username, role string) (models.User, error)
 	InsertNewUserSession(ctx context.Context, session *models.UserSession) error
 	GetUserSessionById(ctx context.Context, id uuid.UUID) (models.UserSession, error)
-	UpdateTokenByRefreshToken(ctx context.Context, token, refresh_token string, tokenExpired, updatedAt time.Time) error
+	UpdateTokenById(ctx context.Context, token, id string, tokenExpired, updatedAt time.Time) error
 	DeleteUserSession(ctx context.Context, token string) error
 }
